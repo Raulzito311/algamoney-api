@@ -8,9 +8,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
@@ -19,7 +17,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    public AuthenticationManager authenticationManager;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -27,7 +25,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .withClient("angular")
                 .secret("@ngul@r0")
                 .scopes("read", "write")
-                .authorizedGrantTypes("password"/*, "refresh_token"*/)
+                .authorizedGrantTypes("password")
                 .accessTokenValiditySeconds(1800);
     }
 
@@ -50,4 +48,5 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public TokenStore tokenStore() {
         return new JwtTokenStore(accessTokenConverter());
     }
+
 }
