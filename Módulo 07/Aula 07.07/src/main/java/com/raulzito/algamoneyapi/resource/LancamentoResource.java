@@ -7,7 +7,7 @@ import com.raulzito.algamoneyapi.repository.LancamentoRepository;
 import com.raulzito.algamoneyapi.repository.filter.LancamentoFilter;
 import com.raulzito.algamoneyapi.repository.projection.ResumoLancamento;
 import com.raulzito.algamoneyapi.service.LancamentoService;
-import com.raulzito.algamoneyapi.service.exception.PessoaInexistenteOuInativaException;
+import com.raulzito.algamoneyapi.service.exception.ObjetoInexistenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -75,9 +75,17 @@ public class LancamentoResource {
         lancamentoRepository.deleteById(codigo);
     }
 
-    @ExceptionHandler({PessoaInexistenteOuInativaException.class })
-    public ResponseEntity<Object> handlePessoaInexistenteOuInativaException(PessoaInexistenteOuInativaException ex) {
-        String mensagemUsuario = messageSource.getMessage("pessoa.inexistente-ou-inativa", null, LocaleContextHolder.getLocale());
+    @PutMapping("/{codigo}")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
+    public ResponseEntity<Lancamento> atualizar(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento) {
+        Lancamento lancamentoSalvo = lancamentoService.atualizar(codigo, lancamento);
+        return ResponseEntity.ok(lancamentoSalvo);
+    }
+
+    @ExceptionHandler({ObjetoInexistenteException.class })
+    public ResponseEntity<Object> handleObjetoInexistenteException(ObjetoInexistenteException ex) {
+        String mensagem = ex.getObj().toLowerCase() + ".inexistente";
+        String mensagemUsuario = messageSource.getMessage(mensagem, null, LocaleContextHolder.getLocale());
         String mensagemDesenvolvedor = ex.toString();
         List<AlgamoneyExceptionHandler.Erro> erros = Arrays.asList(new AlgamoneyExceptionHandler.Erro(mensagemUsuario, mensagemDesenvolvedor));
         return ResponseEntity.badRequest().body(erros);

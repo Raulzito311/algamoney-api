@@ -1,9 +1,13 @@
 package com.raulzito.algamoneyapi.repository;
 
-import com.raulzito.algamoneyapi.model.Pessoa;
-import com.raulzito.algamoneyapi.repository.filter.PessoaFilter;
-import com.raulzito.algamoneyapi.repository.pessoa.PessoaRepositoryQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PessoaRepository extends JpaRepository<Pessoa, Long>, PessoaRepositoryQuery {
+import com.raulzito.algamoneyapi.model.Pessoa;
+
+public interface PessoaRepository extends JpaRepository<Pessoa, Long> {
+
+    public Page<Pessoa> findByNomeContaining(String nome, Pageable pageable);
+
 }
